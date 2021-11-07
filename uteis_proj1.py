@@ -60,9 +60,10 @@ def activate_kde(X_treino,Y_treino,bw):
     return KDE_train0,KDE_train1
 
 #dict_train0 e train1 são o output da activate kde
-def predict(x,dic_train0,dic_train1,priori0,priori1):
+def prever(x,dic_train0,dic_train1,priori0,priori1):
     '''recebe uma nova entrada e calcula a probabilidade de pertencer a uma deteerminada
     class através da more likelihood - ou seja encontrar o argumento y que maximiza a probabilidade
+    devolve array com a previsao de class para o input x
     '''
     p_feats_0=[]
     p_feats_1=[]
@@ -74,16 +75,17 @@ def predict(x,dic_train0,dic_train1,priori0,priori1):
         p_feats_1.append(pred_1)    
     #somatorio de probabilidades da entrada para cada varaivel das diferentes features acordo cls 0 e 1
     soma_prob0=np.sum(p_feats_0,axis=0)
-    soma_prob1=np.sum(p_feats_1,axis=0)    
-    calcul_p0=[]
-    calcul_p1=[]   
-    #ciclo sobre soma_prob
-    for i in range(len(soma_prob0)):
-        calc_0 = math.log(priori0) + soma_prob0[i]
-        calc_1 = math.log(priori1) + soma_prob1[i]
-        calcul_p0.append(calc_0)
-        calcul_p1.append(calc_1)  
-        
+    soma_prob1=np.sum(p_feats_1,axis=0)  
+    #verificar argmax y class 
+    calc_0 = soma_prob0[i]+math.log(priori0) #probabilidade de ser class 0
+    calc_1 = soma_prob1[i]+math.log(priori1) #prob ser class 1
+    previsao=calc_0-calc_1
+    previsao=np.where(previsao>=0,0,1)
+    return previsao
+
+    
+    
+
      
     
     
