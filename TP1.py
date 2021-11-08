@@ -1,5 +1,4 @@
 
-# -*- coding: utf-8 -*-
 """
 Created on Tue Oct 26 11:33:01 2021
 
@@ -7,13 +6,16 @@ Created on Tue Oct 26 11:33:01 2021
 """
 
 ''' Projecto 1 - Machine Learning |||| Naive bayes & SVM classification'''
-from uteis_proj1 import load_data,standartize,misturar_data,activate_kde,prever
+from McNemar import McNemar
+from uteis_proj1 import load_data, standartize,misturar_data
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
 from sklearn.svm import SVC
+from NaiveBayesClassifier import NaiveBayes
+from sklearn.metrics import accuracy_score
+
 '''preparacao dos dados'''
 
 #import data
@@ -35,26 +37,42 @@ def preparar_dados(data_treino,data_teste):
     return X_train,Y_train,X_test,Y_test
 
 X_train,Y_train,X_test,Y_test=preparar_dados(data_tr, data_test)
-print(X_train,Y_train,X_test,Y_test)
 
+print(X_train)
 #probabilidade priori
-priori_0=(np.shape(X_train[Y_train==0,:])[0])/np.shape(X_train)[0] #numero de elementos da respectiva clss / numero total
-priori_1=1-priori_0 #como são apenas 2 classes utilizamos 1 - prob contraria
-print(priori_0, priori_1)
+#priori_0=(X_train[Y_train==0,:].shape(0))/X_train.shape(0) #numero de elementos da respectiva clss / numero total
+#priori_1=1-priori_0 #como são apenas 2 classes utilizamos 1 - prob contraria
 #implementar classificador Naive Bayes kde com ajuste de bandwith
 # considerando desconhecermos a distribuicao dos dados utilizamos o kde para conseguirmos obter as probabilidades de classificacao
 
 # cross validation através Startifiedkfold para dividir as variaveis respsota de forma propocional
-kf = StratifiedKFold(n_splits = 5) #divisão será estratificada data será dividida em 5 folds treinará  em 4 e validará em 1
+kf = StratifiedKFold(n_splits = 5) #divisão será estratificada data será dividida em 5 5 treinará  em 4 e validará em 1
+feats=[1,2,3,4]
 NB_kde_te = [] #erro treino
 NB_kde_ve = [] #erro validacao
 H=np.arange(0.02,0.6,0.02) #definir array bandwith 
+
 for h in H: #iterar sobrebandwith e verificar errors para cada b
     train_error_nv=0
     valid_error_nv=0 #inicializar erros a 0; será feita méia no final sum error/fold
-    for train_id,valid_id in kf.split(Y_train,Y_train): # iterar sobre 5 vezes sobre as diferentes divisoes
+    for train_idx,valid_idx in kf.split(Y_train,Y_train): # iterar sobre 5 vezes sobre as diferentes divisoes
         #fit de model NB KDE e calcula o 1-score associado (fracao classificaçoes incorrectas)  
-        X_tk,Y_tk,X_vk,Y_vk=X_train[train_id],Y_train[train_id],X_train[valid_id],Y_train[valid_id]
+        X_tk,Y_tk,X_vk,Y_vk=X_train[train_idx],Y_train[train_idx],X_train[valid_idx],Y_train[valid_idx]
+
+        nb = NaiveBayes(h,feats)
+
+        nb.fit(X_tk,Y_tk)
+        nb.predict(X_tk,Y_tk)
+        t = nb.score(Y_tk)
+        
+        nb.predict(X_vk,Y_vk)
+        v = nb.score(Y_vk)
+        
+        train_error_nv += t
+        valid_error_nv += v
+
+    
+        """
         kde_0,kde_1=activate_kde(X_tk,Y_tk,h)
         y_prev_train=prever(X_tk,kde_0,kde_1,priori_0,priori_1) #prev class training set
         t_e=1-accuracy_score(Y_tk, y_prev_train) #calc err para training set
@@ -63,11 +81,12 @@ for h in H: #iterar sobrebandwith e verificar errors para cada b
         t_val=1-accuracy_score(Y_vk, y_prev_valid) #calc err para valid set
         train_error_nv+=t_e
         valid_error_nv+=t_val
+        NB_kde_te.append(train_error_nv/5)
+        NB_kde_ve.append(valid_error_nv/5)
+        """
     NB_kde_te.append(train_error_nv/5)
     NB_kde_ve.append(valid_error_nv/5)
- 
-print('erro treino', NB_kde_te) 
-print('errovalidação',NB_kde_ve)    
+      
 #################################################################################
 # fazer plot do H (bandwiths eixo x) e erros no y para verificar evolucao erros com h
 plt.figure()
@@ -82,57 +101,75 @@ plt.close()
 #imprimir melhor h (indice valor min erros validacao
 print ('melhor valor bandwidth: ', H[np.argmin(NB_kde_ve)], ' com um erro de validacao de: ', min(NB_kde_ve))
 #calcuclar o erro real da nossa implementacao com o melhor bandwidth
-h_min=H[np.argmin(NB_kde_ve)]
-kde_0,kde_1=activate_kde(X_train,Y_train,h_min) # achar densidades das features com o h:min
-y_prev_test=prever(X_test,kde_0,kde_1,priori_0,priori_1) #prever com classes do X test com os kde 
-test_score=1-accuracy_score(Y_test, y_prev_test) #verificar score atraves da accuracy do sklearn
+bw_star = H[np.argmin(NB_kde_ve)]
+nb = NaiveBayes(bw_star,feats)
+nb.fit(X_train,Y_train)
+pred_NB = nb.predict(X_test,Y_test)
+NB_true_error = nb.score(Y_test)
+print("NB True Error: ",np.round(NB_true_error,5)) #verificar score atraves da accuracy do sklearn
 
 ##################################################################################
-# Implementar Naive Bayes Gaussian do SKlearn      
-gaussian_nb = GaussianNB()
-gaussian_nb.fit(X_train, Y_train)
-prever_gnb = gaussian_nb.predict(X_test)
-error_train_gnb,error_test_gnb = 1-gaussian_nb.score(X_train, Y_train),1-gaussian_nb.score(X_test, Y_test)
-print("Training Error GNB: ",np.round(error_train_gnb,4))
-print("Test Error GNB: ",np.round(error_test_gnb,4)) 
+# Implementar Naive Bayes Gaussian do SKlearn
 
-###################################################################################
+clf_GNB = GaussianNB()
+clf_GNB.fit(X_train, Y_train)
+pred_GNB = clf_GNB.predict(X_test)
+train_error_GNB = 1-clf_GNB.score(X_train, Y_train)
+GNB_te = 1-clf_GNB.score(X_test, Y_test)
+print("\nGaussianNB Training Error: ",np.round(train_error_GNB,5),\
+      "\nGaussianNB True Error: ",np.round(GNB_te,5))
 
-# implementacao do SVM com ajuste do gamma (1/sigma)
-
-#kf = StratifiedKFold(n_splits = 5) #vem da implementacao do kdekde
-SVM_te = [] #erro treino
-SVM_ve = [] #erro validacao
-Gamma=np.arange(0.02,0.6,0.02) #definir array para gamma 
-for g in Gamma: #iterar sobrebandwith e verificar errors para cada b
-    train_error_svm=0
-    valid_error_svm=0 #inicializar erros a 0; será feita méia no final sum error/fold
-    for train_id,valid_id in kf.split(Y_train,Y_train): # iterar sobre 5 vezes sobre as diferentes divisoes
-        #fit de model NB KDE e calcula o 1-score associado (fracao classificaçoes incorrectas)  
-        X_tk,Y_tk,X_vk,Y_vk=X_train[train_id],Y_train[train_id],X_train[valid_id],Y_train[valid_id]
-        svm_cl=SVC(C=1,gamma=g)#default = rbf 
-        svm_cl.fit(X_tk,Y_tk) #fit model
-        #verificar eficacia do model nos dados treino e validacao
-        t_e,t_v=1-svm_cl.score(X_tk,Y_tk), 1-svm_cl.score(X_vk,Y_vk) 
-        train_error_svm+=t_e 
-        valid_error_svm+=t_v
-    SVM_te.append(train_error_svm)
-    SVM_ve.append(valid_error_svm)
+##############Determination of the gamma on the training set (SVM)############
+###Cross Validation
+train_error_SVM = []
+valid_error_SVM = []
+gamma = np.arange(0.2,6.1,0.2)
+  
+for g in gamma:
     
-# fazer plot do gamma (eixo x) e erros no y para verificar evolucao erros com h
-plt.figure()
-plt.title('SVM RBF - Training vs Validation Error (gamma)')
-plt.plot(Gamma,SVM_te,'blue',label='training_err') #plot erros treino acordo h
-plt.plot(Gamma,SVM_ve,'red',label='validation_err') #plot erros valid acordo h
-plt.xlabel('gamma value')
-plt.ylabel('error')
-plt.savefig('SVM.png',dpi=250) #gravar com nome requerido 
+    t_error_SVM = v_error_SVM = 0
+    
+    for train_idx, valid_idx in kf.split(Y_train,Y_train):
+        
+        xt_set = X_train[train_idx]
+        yt_set = Y_train[train_idx]
+        xv_set = X_train[valid_idx]
+        yv_set = Y_train[valid_idx]
+        
+        clf = SVC(C = 1 , kernel = "rbf", gamma = g)
+        clf.fit(xt_set,yt_set)        
+        
+        t = 1-clf.score(xt_set,yt_set)
+        t_error_SVM += t
+        
+        v = 1-clf.score(xv_set,yv_set)
+        v_error_SVM += v
+    
+    train_error_SVM.append(t_error_SVM/5)
+    valid_error_SVM.append(v_error_SVM/5)
+    #print("\nGamma: ",g,':', t_error_SVM/5,'\t',v_error_SVM/5)
+
+plt.plot(gamma, train_error_SVM,'b',label='Training Error')
+plt.plot(gamma, valid_error_SVM, 'r',label='Validation Error')
+plt.title('SVM: Training Error vs Validation Error') 
+plt.xlabel('Gamma')
+plt.ylabel('Error')
+plt.legend(loc='upper right',frameon=False)
+plt.savefig('SVM.png', dpi=300)
 plt.close()
 
-##############################################################################
-# Comparação classificadores através método Macnemar
+print("\nBest gamma =",np.round(gamma[np.argmin(valid_error_SVM)],2))
+print("SVM Training Error: ",np.round\
+      (train_error_SVM[np.argmin(valid_error_SVM)],5),
+   "\nSVM Validation Error: ",np.round(min(valid_error_SVM),5))
 
-'''
+clf_SVM = SVC(C=1.0 , kernel = "rbf", gamma = gamma[np.argmin(valid_error_SVM)])
+clf_SVM.fit(X_train,Y_train) 
+pred_SVM = clf_SVM.predict(X_test)
+SVM_te = 1-clf_SVM.score(X_test,Y_test)
+print("SVM True Error: ",np.round(SVM_te,5))
+
+
 ########################Comparing classifiers#################################
 n = len(Y_test) #number of observations
 
@@ -167,6 +204,6 @@ q,w,e = McNemar(pred_NB,pred_GNB,pred_SVM,Y_test)
 
 print("\nMcnemar's Test:")
 print('NB_vs_GNB = ',np.round(q,5),'\nNB_vs_SVM = ',\
-      np.round(w,5),'\nGNB_vs_SVM = ',np.round(e,5))'''
+      np.round(w,5),'\nGNB_vs_SVM = ',np.round(e,5))
 
     
