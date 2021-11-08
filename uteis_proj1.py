@@ -67,7 +67,7 @@ def predict(x,dic_train0,dic_train1,priori0,priori1):
     p_feats_0=[]
     p_feats_1=[]
     #iterar sobre as keys dos dic fit_kde e calcular a prob like para cada variavel
-    for i in dic_trai0.keys():
+    for i in dic_train0.keys():
         pred_0=dic_train0[i].score_sample(x[:,[i]]) #calcualr o log likelihood cls0
         pred_1=dic_train1[i].score_sample(x[:,[i]]) #calcualr o log likelihood cls1
         p_feats_0.append(pred_0)
