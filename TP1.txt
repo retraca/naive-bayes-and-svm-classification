@@ -25,7 +25,7 @@ respectivo desvio padrão. | data[:,:-1]-np.mean(data[:,:-1]))/np.std(data[:,:-1
 
 Q3: Explique como calculou a probabilidade a priori de um exemplo pertencer a uma classe (a probabilidade antes de ter em conta os valores dos atributos do exemplo) na sua implementação do classificador Naïve Bayes. Pode incluir um trecho relevante do código se ajudar a explicar.
 R3: A probabilidade à priori de um dado exemplo é calculada a partir do numero de exemplos de determinada classe, sobre o numero de exemplos totais.
-ou seja, (np.shape(X_train[Y_train==0,:])[0])/np.shape(X_train)[0]
+ou seja, P(Y==0)=(np.shape(X_train[Y_train==0,:])[0])/np.shape(X_train)[0]
 como apenas existem duas classes, P(Y==1)=1-P(Y==0) 
 
 
@@ -54,10 +54,12 @@ R6:
 
 
 Q7: Explique como determinou o melhor parâmetro de bandwidth e gamma para o seu classificador e o classificador SVM. Pode incluir um trecho relevante do código se ajudar a explicar.
-R7:
+R7: Através da técnica Stratified Cross Validation que faz a divisão de forma proporcional foram optimizados ambos os valores. De forma ciclica efectuou-se a cross validation
+para os diferentes modelos e respectivos parâmetros (bandwidth(h) e gamma(g)), onde em cada iteração foram treinados os modelos com os respectivos valores (h e g) e retirado o erro de treino e error de validação. No final das iterações pelos valores possiveis de gamma e bandwith foi verificado o indíce do valor minimo do set - erros de validação, indice que corresponde ao valor óptimo dos diferentes parametros. (os dados para treino do modelo foram divididos em 5 fold)
 
 Q8: Explique como obteve a melhor hipótese para cada um dos classificadores depois de optimizados os parâmetros.
-R8:
+R8: Depois de optimizados os parâmetros, os classificadores (com os parâmetros) foram treinados com os dados de treino e de seguida foi verificado o seu erro real recorrendo 
+aos dados de teste.
 
 
 Q9: Mostre os melhores valores dos parâmetros optimizados, a estimativa do erro verdadeiro de cada uma das hipóteses que obteve (o seu classificador e os dois fornecidos pela biblioteca), os intervalos do número esperado de erros dados pelo teste normal aproximado e os valores dos testes de McNemar e discuta o que pode concluir daí.
