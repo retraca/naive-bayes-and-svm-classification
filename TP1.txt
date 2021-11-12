@@ -55,7 +55,7 @@ R6:
 
 Q7: Explique como determinou o melhor parâmetro de bandwidth e gamma para o seu classificador e o classificador SVM. Pode incluir um trecho relevante do código se ajudar a explicar.
 R7: Através da técnica Stratified Cross Validation que faz a divisão de forma proporcional foram optimizados ambos os valores. De forma ciclica efectuou-se a cross validation
-para os diferentes modelos e respectivos parâmetros (bandwidth(h) e gamma(g)), onde em cada iteração foram treinados os modelos com os respectivos valores (h e g) e retirado o erro de treino e error de validação. No final das iterações pelos valores possiveis de gamma e bandwith foi verificado o indíce do valor minimo do set - erros de validação, indice que corresponde ao valor óptimo dos diferentes parametros. (os dados para treino do modelo foram divididos em 5 fold)
+para os diferentes modelos e respectivos parâmetros (bandwidth(h) e gamma(g)), onde em cada iteração foram treinados os modelos com os respectivos valores (h e g) e retirado o erro de treino e error de validação. No final das iterações pelos valores possiveis de gamma e bandwith foi verificado o indíce do valor minimo do set_erros de validação, indice que corresponde ao valor óptimo dos diferentes parametros. (os dados para treino do modelo foram divididos em 5 fold)
 
 Q8: Explique como obteve a melhor hipótese para cada um dos classificadores depois de optimizados os parâmetros.
 R8: Depois de optimizados os parâmetros, os classificadores (com os parâmetros) foram treinados com os dados de treino e de seguida foi verificado o seu erro real recorrendo 
@@ -63,7 +63,9 @@ aos dados de teste.
 
 
 Q9: Mostre os melhores valores dos parâmetros optimizados, a estimativa do erro verdadeiro de cada uma das hipóteses que obteve (o seu classificador e os dois fornecidos pela biblioteca), os intervalos do número esperado de erros dados pelo teste normal aproximado e os valores dos testes de McNemar e discuta o que pode concluir daí.
-R9:
+R9: NB KDE - (melhor valor bandwidth: 0.06, erro de validacao:  0.0634, erro verdadeiro: 0.0834)
+    Gaussian NB - (Erro Verdadeiro: 0.0922)
+    SVM - (melhor gamma: 0.44, erro validação 0.2568, erro verdadeiro: 0.0593)
 
 
 Q10: (Opcional) Mostre a estimativa do erro verdadeiro do classificador SVM optimizado (se fez a parte opcional do trabalho) e discuta se valeu a pena fazer essa optimização. Se não fez a parte opcional do trabalho deixe esta resposta em branco.
