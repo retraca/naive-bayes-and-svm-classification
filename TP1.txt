@@ -18,23 +18,33 @@ A variável Y (de resposta) não deve ser 'standartizada', pois é binária.
 
 
 Q2: Explique como calculou os parâmetros para standardização e como os usou no conjunto de teste.
-R2: Os parametros foram calculandos através do somatório da diferença entre as variáveis (escepcao variável resposta) e a sua média, dividindo esse valor pelo 
+R2: Os parametros foram calculandos através do somatório da diferença entre as variáveis (excepto variável resposta) e a sua média, dividindo esse valor pelo 
 respectivo desvio padrão. | data[:,:-1]-np.mean(data[:,:-1]))/np.std(data[:,:-1])
 
 
 
 Q3: Explique como calculou a probabilidade a priori de um exemplo pertencer a uma classe (a probabilidade antes de ter em conta os valores dos atributos do exemplo) na sua implementação do classificador Naïve Bayes. Pode incluir um trecho relevante do código se ajudar a explicar.
 R3: A probabilidade à priori de um dado exemplo é calculada a partir do numero de exemplos de determinada classe, sobre o numero de exemplos totais.
-ou seja,  numerador=[i for i in Y if ==1]; denominador=Y.shape[0]; p(Y==1)=len(numerador)/denominador
-como apenas existem duas classes, P(Y==0)=1-P(Y==1) 
+ou seja, (np.shape(X_train[Y_train==0,:])[0])/np.shape(X_train)[0]
+como apenas existem duas classes, P(Y==1)=1-P(Y==0) 
 
 
 Q4: Explique como o seu classificador Naïve Bayes prevê a classe a que um exemplo de teste pertence. Pode incluir um trecho relevante do código se ajudar a explicar.
-R4:
+R4: O classificador NV KDE implementado neste projecto prevê a classe da seguinte forma: numa primeira fase através do Kernel Density Estimation são calculadas as densidades 
+das diferentes variaveis dos diferentes gupos da variaveis resposta (class 1 e 0). Neste projecto a função activate_KDE recebe como input os dados de treino e retorna dois
+dicionarios com 4 chaves (4 variaveis) cada um com os respectivos de valores de densidade. 
+Com estes valores foi implementada a funçao de previsão, que recebe uma entrada a classificar, os 8 KDE calculados anteriormente e as probabilidades à priori das classes.
+Com estes dados é calculada a densidade da entrada para cada variável, sendo somadas de seguida para ser possível calcular a que classe pertence, utilizando Naive Bayes.
+A class é dada pelo argumento que maximiza a probabilidade P(x\Y) , ou seja é calculada a probabilidade de x para ambas a classes e verificado qual o valor mais alto.
+Utilizando numpy subtraiu-se prob(x\y==0)-prob(x\y==1); Os indices >=0 foram classificados com class==0 e os restantes class==1.
+calc_0 = soma_prob0+math.log(priori0) #probabilidade sendo class 0 
+calc_1 = soma_prob1+math.log(priori1) #prob sendo class 1
+previsao=calc_0-calc_1
+previsao=np.where(previsao>=0,0,1)
 
 
 Q5: Explique que efeito tem o parâmetro de bandwidth no seu classificador.
-R5: O efeito de bandwidth tem efeito na descriminacao do classificardor, pois o seu valor define o peso de proximidade, ou seja, valores mais altos de bandwidth farão 
+R5: O efeito de bandwidth tem efeito na descriminacao do classificador, pois o seu valor define o peso de proximidade, ou seja, valores mais altos de bandwidth farão 
 com que o classificador  seja mais generalista e considere valores mais longe da media de treino (um valor muito alto pode causar underfiting) , enquanto que se for 
 mais baixo considerá apenas os valores mais proximos da média, o que fará com que estimativa de treino seja mais precisa, mas pode causar overfiting. Assim é de todo
 conveniente que sejam aplicadas tecnicas como o cross validation afim de escolher o valor optimo.   
@@ -56,4 +66,3 @@ R9:
 
 Q10: (Opcional) Mostre a estimativa do erro verdadeiro do classificador SVM optimizado (se fez a parte opcional do trabalho) e discuta se valeu a pena fazer essa optimização. Se não fez a parte opcional do trabalho deixe esta resposta em branco.
 R10:
-
