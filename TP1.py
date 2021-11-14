@@ -79,10 +79,10 @@ plt.ylabel('error')
 plt.savefig('NB.png',dpi=250) #gravar com nome requerido 
 plt.close()
 
-#imprimir melhor h (indice valor min erros validacao
-print ('melhor valor bandwidth: ', H[np.argmin(NB_kde_ve)], ' com um erro de validacao de: ', min(NB_kde_ve))
-#calcuclar o erro real da nossa implementacao com o melhor bandwidth
 h_min=H[np.argmin(NB_kde_ve)]
+#imprimir melhor h (indice valor min erros validacao
+print ('melhor valor bandwidth: ',h_min, ' com um erro de validacao de: ', min(NB_kde_ve))
+#calcuclar o erro real da nossa implementacao com o melhor bandwidth
 kde_0,kde_1=activate_kde(X_train,Y_train,h_min) # achar densidades das features com o h:min
 y_prev_test_kde=prever(X_test,kde_0,kde_1,priori_0,priori_1) #prever com classes do X test com os kde 
 test_score=1-accuracy_score(Y_test, y_prev_test_kde) #verificar score atraves da accuracy do sklearn
@@ -116,8 +116,8 @@ for g in Gamma: #iterar sobrebandwith e verificar errors para cada b
         t_e,t_v=1-svm_cl.score(X_tk,Y_tk), 1-svm_cl.score(X_vk,Y_vk) 
         train_error_svm+=t_e 
         valid_error_svm+=t_v
-    SVM_te.append(train_error_svm)
-    SVM_ve.append(valid_error_svm)
+    SVM_te.append(train_error_svm/5)
+    SVM_ve.append(valid_error_svm/5)
 
 
 # fazer plot do gamma (eixo x) e erros no y para verificar evolucao erros com h
@@ -145,10 +145,11 @@ print("SVM Test Error: ",np.round(test_error_SVM,5))
 
 # Macnemar
 KDE_NB,KDE_SVM,NB_SVM=macnemar(y_prev_test_kde,prev_GNB_test,prev_SVM_test,Y_test)
-print(f"NB KDE vs GNB:{KDE_NB}, NV KDE vs SVM:{KDE_SVM}, GNB vs SVM: {NB_SVM}")
+print(f" o teste de macnemar dá os seguintes valores - NB KDE vs GNB:{KDE_NB}, NV KDE vs SVM:{KDE_SVM}, GNB vs SVM: {NB_SVM}")
 
 #stats.chi2.cdf(NB_SVM,1) = 0.65 quando p(x)>p(a) nao ha diferenca entre os classificadores
 #Aproximate normal test
+
 
 ############################################################################################
 
@@ -174,8 +175,8 @@ for c in C_op:
             t_e,t_v=1-svm_cl.score(X_tk,Y_tk), 1-svm_cl.score(X_vk,Y_vk) 
             train_error_svm+=t_e 
             valid_error_svm+=t_v
-        SVM_te.append(train_error_svm)
-        SVM_ve.append(valid_error_svm)
+        SVM_te.append(train_error_svm/5)
+        SVM_ve.append(round(valid_error_svm/5,5))
     complex_SVM_te.append(SVM_te)
     complex_SVM_ve.append(SVM_te)
     
@@ -193,7 +194,5 @@ SVM_test_op = SVC(C=C_opt , kernel = "rbf", gamma = Gamma_opt)
 SVM_test_op.fit(X_train,Y_train) 
 prev_SVM_op = SVM_test_op.predict(X_test) #array de y_prev svm 
 error_test_op= 1-SVM_test_op.score(X_test,Y_test) #erro verdadeiro 
-print("SVM Test Error: ",np.round(test_error_SVM,5))
-print(f'com os parametros optimizados o erro verdadeiro é {error_test_op}')
-
+print(f'com os parametros c e gamma optimizados o erro verdadeiro é {error_test_op}')
 
