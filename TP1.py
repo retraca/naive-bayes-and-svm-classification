@@ -194,6 +194,6 @@ SVM_test_op.fit(X_train,Y_train)
 prev_SVM_op = SVM_test_op.predict(X_test) #array de y_prev svm 
 error_test_op= 1-SVM_test_op.score(X_test,Y_test) #erro verdadeiro 
 print("SVM Test Error: ",np.round(test_error_SVM,5))
-print(f'com os parametros optimizados o erro verdadeiro é {erro_test_op}')
+print(f'com os parametros optimizados o erro verdadeiro é {error_test_op}')
 
 
