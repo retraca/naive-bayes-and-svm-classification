@@ -8,12 +8,10 @@ QUESTÔES:
 Q1: Considerando os dados fornecidos, explique a necessidade de standardizar os valores dos atributos.
 R1: Os dados representados são continuos e estão escalados de forma diferente, enquanto x1 e x4 variam entre ~-1 e 2, os valores de x2 e x3 variam entre ~ 20 e 30. 
 Esta diferença de escala tem impacto directo em alguns algoritmos utilizados na minimizaçao da função custo, pois diminui a eficiencia do mesmo. 
-(ie. o algoritmo gradient descendent, que acham o minimo da função custo através da derivacao parcial de um learning rate,ou SVM que optimiza distancias, são afectados,
-o primeiro porque algoritmo evolui para um mínimo de forma mais depressa nas variaveis de menor dimensao o que provoque um 'zigzag' no movimento para o minimo, 
-e o svm porque como lida com a mximização de distâncias de margem pode ser muito influenciado por uma variavel que tenha valores demasiado grandes.
+(ie. o algoritmo gradient descendent ou SVM que optimiza distancias são afectados, o primeiro porque algoritmo evolui para um mínimo de forma mais depressa nas variaveis de menor dimensao o que provoque um 'zigzag' no movimento para o minimo, e o svm porque como lida com a mximização de distâncias de margem pode ser muito influenciado por uma variavel que tenha valores demasiado grandes.
 O Feature scalling resolve esse problema colcando os valores na mesma escala. Embora em algumas técnicas, como regressão através das equações normais e naive bayes, 
-a normalização ou standartização não serem relevante, a maioria dos algoritmos de machine learning são efectadas pela escala dos dados e portanto é comum ser feito 
-sempre o feature scalling. 
+a normalização ou standartização não serem relevantes, a maioria dos algoritmos de machine learning são efectadas pela escala dos dados e portanto é comum ser feito 
+o feature scalling. 
 A variável Y (de resposta) não deve ser 'standartizada', pois é binária. 
 
 
@@ -45,9 +43,9 @@ previsao=np.where(previsao>=0,0,1)
 
 Q5: Explique que efeito tem o parâmetro de bandwidth no seu classificador.
 R5: O efeito de bandwidth tem efeito na descriminacao do classificador, pois o seu valor define o peso de proximidade, ou seja, valores mais altos de bandwidth farão 
-com que o classificador  seja mais generalista e considere valores mais longe da media de treino (um valor muito alto pode causar underfiting) , enquanto que se for 
-mais baixo considerá apenas os valores mais proximos da média, o que fará com que estimativa de treino seja mais precisa, mas pode causar overfiting. Assim é de todo
-conveniente que sejam aplicadas tecnicas como o cross validation afim de escolher o valor optimo.   
+com que o classificador  seja mais generalista e considere valores mais longe da posição avaliada (um valor muito alto pode causar underfiting) , enquanto que se for 
+mais baixo considerá apenas os valores mais proximos da posição, o que fará com que estimativa de treino seja mais precisa mas pouco generalista, causando overfiting. 
+Assim, é de todo conveniente que sejam aplicadas tecnicas como o cross validation afim de escolher o valor optimo.   
 
 Q6: Explique que efeito tem o parâmetro gamma no classificador SVM.
 R6:
