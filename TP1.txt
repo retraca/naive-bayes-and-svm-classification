@@ -48,7 +48,8 @@ mais baixo considerá apenas os valores mais proximos da posição, o que fará 
 Assim, é de todo conveniente que sejam aplicadas tecnicas como o cross validation afim de escolher o valor optimo.   
 
 Q6: Explique que efeito tem o parâmetro gamma no classificador SVM.
-R6:
+R6: De forma genérica o parâmetro gamma define o quão próximo tem que estar um exemplo para ser considerado na definição da 'decision boundary', quando o gamma é baixo
+significa que valores mais longe são considerados para definir a linha de decisão, quando o gamma tem um valor alto significa que apenas os valores mais proximos vão ser considerados. Em suma, um valor muito pequeno de gamma poderá causar underfiting  enquanto que um valor muito alto poderá causar overfiting.
 
 
 Q7: Explique como determinou o melhor parâmetro de bandwidth e gamma para o seu classificador e o classificador SVM. Pode incluir um trecho relevante do código se ajudar a explicar.
@@ -64,7 +65,8 @@ Q9: Mostre os melhores valores dos parâmetros optimizados, a estimativa do erro
 R9: NB KDE - (melhor valor bandwidth: 0.06, erro de validacao:  0.0634, erro verdadeiro: 0.0834)
     Gaussian NB - (Erro Verdadeiro: 0.0922)
     SVM - (melhor gamma: 0.44, erro validação 0.2568, erro verdadeiro: 0.0593)
-
+    O teste de macnemar dá os seguintes valores - NB KDE vs GNB:(0.0, 1.0), NV KDE vs SVM:(23.29032258064516, 1.392991340387617e-06), GNB vs SVM: (26.74074074074074,     2.3266392079612785e-07), analisando os valores pode dizer-se que os classificadores NB KDE e GNB têm um comportamento semelhante na classificação, pois 
+    p(x)= 1 > p(a)=0.65, já as restantes comparações são rejeitados, pois os seus p(x) são menores que p(a).
 
 Q10: (Opcional) Mostre a estimativa do erro verdadeiro do classificador SVM optimizado (se fez a parte opcional do trabalho) e discuta se valeu a pena fazer essa optimização. Se não fez a parte opcional do trabalho deixe esta resposta em branco.
 R10:
