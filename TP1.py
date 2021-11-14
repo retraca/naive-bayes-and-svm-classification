@@ -76,6 +76,7 @@ plt.plot(H,NB_kde_te,'blue',label='training_err') #plot erros treino acordo h
 plt.plot(H,NB_kde_ve,'red',label='validation_err') #plot erros valid acordo h
 plt.xlabel('bandwidth')
 plt.ylabel('error')
+plt.legend(loc='lower right',frameon=False)
 plt.savefig('NB.png',dpi=250) #gravar com nome requerido 
 plt.close()
 
@@ -123,10 +124,11 @@ for g in Gamma: #iterar sobrebandwith e verificar errors para cada b
 # fazer plot do gamma (eixo x) e erros no y para verificar evolucao erros com h
 plt.figure()
 plt.title('SVM RBF - Training vs Validation Error (gamma)')
-plt.plot(Gamma,SVM_te,'blue',label='training_err') #plot erros treino acordo h
-plt.plot(Gamma,SVM_ve,'red',label='validation_err') #plot erros valid acordo h
+plt.plot(Gamma,SVM_te,'blue',label='training_error') #plot erros treino acordo h
+plt.plot(Gamma,SVM_ve,'red',label='validation_error') #plot erros valid acordo h
 plt.xlabel('gamma value')
 plt.ylabel('error')
+plt.legend(loc='upper right',frameon=False)
 plt.savefig('SVM.png',dpi=250) #gravar com nome requerido 
 plt.close()
 
@@ -176,7 +178,7 @@ for c in C_op:
             train_error_svm+=t_e 
             valid_error_svm+=t_v
         SVM_te.append(train_error_svm/5)
-        SVM_ve.append(round(valid_error_svm/5,5))
+        SVM_ve.append(round(valid_error_svm/5))
     complex_SVM_te.append(SVM_te)
     complex_SVM_ve.append(SVM_te)
     
@@ -196,3 +198,6 @@ prev_SVM_op = SVM_test_op.predict(X_test) #array de y_prev svm
 error_test_op= 1-SVM_test_op.score(X_test,Y_test) #erro verdadeiro 
 print(f'com os parametros c e gamma optimizados o erro verdadeiro é {error_test_op}')
 
+
+
+        
