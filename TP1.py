@@ -148,3 +148,51 @@ KDE_NB,KDE_SVM,NB_SVM=macnemar(y_prev_test_kde,prev_GNB_test,prev_SVM_test,Y_tes
 print(f"NB KDE vs GNB:{KDE_NB}, NV KDE vs SVM:{KDE_SVM}, GNB vs SVM: {NB_SVM}")
 
 #Aproximate normal test
+
+############################################################################################
+
+# implementacao do SVM com ajuste do gamma (1/sigma) e c
+
+#kf = StratifiedKFold(n_splits = 5) #vem da implementacao do kdekde
+Gamma=np.arange(0.02,0.6,0.02) #definir array para gamma 
+C_op=np.arange(1,60,3)
+complex_SVM_te = [] #erro treino
+complex_SVM_ve = [] #erro validacao
+for c in C_op:
+    SVM_te = [] #erro treino
+    SVM_ve = [] #erro validacao
+    for g in Gamma: #iterar sobrebandwith e verificar errors para cada b
+        train_error_svm=0
+        valid_error_svm=0 #inicializar erros a 0; será feita méia no final sum error/fold
+        for train_id,valid_id in kf.split(Y_train,Y_train): # iterar sobre 5 vezes sobre as diferentes divisoes
+            #fit de model NB KDE e calcula o 1-score associado (fracao classificaçoes incorrectas)  
+            X_tk,Y_tk,X_vk,Y_vk=X_train[train_id],Y_train[train_id],X_train[valid_id],Y_train[valid_id]
+            svm_cl=SVC(C=c,gamma=g)#default = rbf 
+            svm_cl.fit(X_tk,Y_tk) #fit model
+            #verificar eficacia do model nos dados treino e validacao
+            t_e,t_v=1-svm_cl.score(X_tk,Y_tk), 1-svm_cl.score(X_vk,Y_vk) 
+            train_error_svm+=t_e 
+            valid_error_svm+=t_v
+        SVM_te.append(train_error_svm)
+        SVM_ve.append(valid_error_svm)
+    complex_SVM_te.append(SVM_te)
+    complex_SVM_ve.append(SVM_te)
+    
+# verificar parametros que minimiza o erro de validação
+SVM_ve_op=np.array(complex_SVM_ve) #tranformar em array np
+min_err_val=np.amin(SVM_ve_op)
+print('erro validacao minimo: :',min_err_val)
+indices=np.where(SVM_ve_op==min_err_val) #retorna indices do valor minimo m=c n =gamma
+C_opt=C_op[indices[0]]
+Gamma_opt=Gamma[indices[1]]
+
+print(f'os parametros que optimizam o modelos são c={C_opt} e gamma={Gamma_opt} com um erro de validação={min_err_val}')
+
+SVM_test_op = SVC(C=C_opt , kernel = "rbf", gamma = Gamma_opt)
+SVM_test_op.fit(X_train,Y_train) 
+prev_SVM_op = SVM_test_op.predict(X_test) #array de y_prev svm 
+error_test_op= 1-SVM_test_op.score(X_test,Y_test) #erro verdadeiro 
+print("SVM Test Error: ",np.round(test_error_SVM,5))
+print(f'com os parametros optimizados o erro verdadeiro é {erro_test_op}')
+
+
