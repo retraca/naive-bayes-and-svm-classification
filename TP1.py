@@ -147,6 +147,7 @@ print("SVM Test Error: ",np.round(test_error_SVM,5))
 KDE_NB,KDE_SVM,NB_SVM=macnemar(y_prev_test_kde,prev_GNB_test,prev_SVM_test,Y_test)
 print(f"NB KDE vs GNB:{KDE_NB}, NV KDE vs SVM:{KDE_SVM}, GNB vs SVM: {NB_SVM}")
 
+#stats.chi2.cdf(NB_SVM,1) = 0.65 quando p(x)>p(a) nao ha diferenca entre os classificadores
 #Aproximate normal test
 
 ############################################################################################
