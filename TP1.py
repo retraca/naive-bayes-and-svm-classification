@@ -86,8 +86,8 @@ print ('melhor valor bandwidth: ',h_min, ' com um erro de validacao de: ', min(N
 #calcuclar o erro real da nossa implementacao com o melhor bandwidth
 kde_0,kde_1=activate_kde(X_train,Y_train,h_min) # achar densidades das features com o h:min
 y_prev_test_kde=prever(X_test,kde_0,kde_1,priori_0,priori_1) #prever com classes do X test com os kde 
-test_score=1-accuracy_score(Y_test, y_prev_test_kde) #verificar score atraves da accuracy do sklearn
-print('Test Error NB KDE: ',test_score)
+error_test_kde=1-accuracy_score(Y_test, y_prev_test_kde) #verificar score atraves da accuracy do sklearn
+print('Test Error NB KDE: ',error_test_kde)
 ##################################################################################
 # Implementar Naive Bayes Gaussian do SKlearn      
 gaussian_nb = GaussianNB()
@@ -133,13 +133,13 @@ plt.savefig('SVM.png',dpi=250) #gravar com nome requerido
 plt.close()
 
 gamma_opt=Gamma[np.argmin(SVM_ve)]
-print(f'gamma optimized: {gamma_opt} com um erro validação {min(SVM_ve)}')
+print('gamma optimized: ',gamma_opt,' com um erro validação', min(SVM_ve))
 ## fit svm com gamma optimizado
 SVM_test = SVC(C=1.0 , kernel = "rbf", gamma = gamma_opt)
 SVM_test.fit(X_train,Y_train) 
 prev_SVM_test = SVM_test.predict(X_test) #array de y_prev svm 
 test_error_SVM= 1-SVM_test.score(X_test,Y_test) #erro verdadeiro 
-print(f'SVM Test Error {np.round(test_error_SVM,5)}')
+print("SVM Test Error: ",np.round(test_error_SVM,5))
 
 ##############################################################################
 # Comparação classificadores através método Macnemar e aproximate normal test
@@ -150,12 +150,18 @@ KDE_NB,KDE_SVM,NB_SVM=macnemar(y_prev_test_kde,prev_GNB_test,prev_SVM_test,Y_tes
 print(f" o teste de macnemar dá os seguintes valores - NB KDE vs GNB:{KDE_NB}, NV KDE vs SVM:{KDE_SVM}, GNB vs SVM: {NB_SVM}")
 
 #stats.chi2.cdf(NB_SVM,1) = 0.65 quando p(x)>p(a) nao ha diferenca entre os classificadores
-#Aproximate normal test
-# falta fazer
 
+#Aproximate normal test - n*error +/- const * sqrt( (error * (1 - error))
+#kde 'error_test_kde, GNB 'error_test_gnb', SVM 'test_error_SVM'
+# const=1.96 para 0.95
+n=np.shape(X_test)[0]
+#Naive Bayes KDE
+KDE_IC=((n*error_test_kde-1.96*np.sqrt( (error_test_kde* (1 - error_test_kde)))),(n*error_test_kde+1.96*np.sqrt( (error_test_kde* (1 - error_test_kde))))) 
+GNB_IC=((n*error_test_gnb-1.96*np.sqrt( (error_test_gnb* (1 - error_test_gnb)))),(n*error_test_gnb+1.96*np.sqrt( (error_test_gnb* (1 - error_test_gnb)))))
+SVM_IC=((n*test_error_SVM-1.96*np.sqrt( (test_error_SVM* (1 - test_error_SVM)))),(n*test_error_SVM+1.96*np.sqrt( (test_error_SVM* (1 - test_error_SVM)))))
+print(f'intervalo NB KDE:{KDE_IC}, intervalo GNB:{GNB_IC}, intervalo SVM:{SVM_IC}')
 
 ############################################################################################
-
 # implementacao do SVM com ajuste do gamma (1/sigma) e c
 
 #kf = StratifiedKFold(n_splits = 5) #vem da implementacao do kdekde
@@ -179,7 +185,7 @@ for c in C_op:
             train_error_svm+=t_e 
             valid_error_svm+=t_v
         SVM_te.append(train_error_svm/5)
-        SVM_ve.append(round((valid_error_svm/5),5))
+        SVM_ve.append(round((valid_error_svm/5),3))
     complex_SVM_te.append(SVM_te)
     complex_SVM_ve.append(SVM_te)
     
@@ -200,3 +206,5 @@ error_test_op= 1-SVM_test_op.score(X_test,Y_test) #erro verdadeiro
 print(f'com os parametros c e gamma optimizados o erro verdadeiro é {error_test_op}')
 
 
+
+        
